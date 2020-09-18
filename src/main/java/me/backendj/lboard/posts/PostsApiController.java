@@ -1,6 +1,7 @@
 package me.backendj.lboard.posts;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.MediaTypes;
@@ -19,17 +20,6 @@ public class PostsApiController {
 
     private final PostsRepository postsRepository;
 
-
-    @GetMapping
-    public ResponseEntity<Posts> findAll(Pageable pageable, PagedResourcesAssembler<Posts> assembler) {
-        return ResponseEntity.ok().build();
-    }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<Posts> findById(@PathVariable("id") Long id) {
-        return ResponseEntity.ok().build();
-    }
-
     @PostMapping
     public ResponseEntity<Posts> save(@RequestBody @Valid PostsCreateDto postsDto, Errors errors) {
         if (errors.hasErrors()) {
@@ -42,6 +32,19 @@ public class PostsApiController {
         URI selfLink = WebMvcLinkBuilder.linkTo(this.getClass()).slash(savedPost.getId()).toUri();
 
         return ResponseEntity.created(selfLink).body(posts);
+    }
+
+    @GetMapping
+    public ResponseEntity findAll(Pageable pageable, PagedResourcesAssembler<Posts> assembler) {
+        Page<Posts> all = postsRepository.findAll(pageable);
+        var entityModels = assembler.toModel(all);
+        return ResponseEntity.ok(entityModels);
+
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Posts> findById(@PathVariable("id") Long id) {
+        return ResponseEntity.ok().build();
     }
 
     @PutMapping
