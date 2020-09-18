@@ -32,4 +32,12 @@ public class Posts extends BaseEntity {
         this.content = content;
         this.author = author;
     }
+
+    public static Posts toEntity(PostsCreateDto form) {
+        return Posts.builder()
+                .title(form.getTitle())
+                .content(form.getContent())
+                .author(form.getAuthor())
+                .build();
+    }
 }
