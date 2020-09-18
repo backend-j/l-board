@@ -27,8 +27,8 @@ class PostsApiControllerTest {
     @DisplayName("Posts 생성")
     void save() throws Exception {
         PostsCreateDto postsForm = PostsCreateDto.builder()
-                .title("title")
-                .content("content")
+                .title("title-1")
+                .content("content-1")
                 .author("pej")
                 .build();
 
@@ -36,7 +36,7 @@ class PostsApiControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(postsForm)))
                 .andDo(print())
-                .andExpect(status().isOk());
+                .andExpect(status().isCreated());
     }
 
     @Test

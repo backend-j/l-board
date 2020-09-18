@@ -4,11 +4,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.MediaTypes;
+import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.net.URI;
 
 @RequiredArgsConstructor
 @RequestMapping(value = "/api/v1/posts", produces = MediaTypes.HAL_JSON_VALUE)
@@ -29,14 +31,17 @@ public class PostsApiController {
     }
 
     @PostMapping
-    public ResponseEntity<Posts> save(@RequestBody @Valid PostsCreateDto postsForm, Errors errors) {
+    public ResponseEntity<Posts> save(@RequestBody @Valid PostsCreateDto postsDto, Errors errors) {
         if (errors.hasErrors()) {
             return ResponseEntity.badRequest().build();
         }
 
-        Posts posts = Posts.toEntity(postsForm); //dto to entity
-        postsRepository.save(posts);
-        return ResponseEntity.ok().body(posts);
+        Posts posts = Posts.toEntity(postsDto); //dto to entity
+        Posts savedPost = postsRepository.save(posts);
+
+        URI selfLink = WebMvcLinkBuilder.linkTo(this.getClass()).slash(savedPost.getId()).toUri();
+
+        return ResponseEntity.created(selfLink).body(posts);
     }
 
     @PutMapping
