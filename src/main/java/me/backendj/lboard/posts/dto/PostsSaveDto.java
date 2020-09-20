@@ -7,7 +7,7 @@ import javax.validation.constraints.NotBlank;
 
 @Data
 @Builder
-public class PostsCreateDto {
+public class PostsSaveDto {
 
     @NotBlank(message = "제목을 입력하세요")
     private String title;

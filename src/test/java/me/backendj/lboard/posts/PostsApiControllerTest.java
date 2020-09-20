@@ -1,6 +1,7 @@
 package me.backendj.lboard.posts;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import me.backendj.lboard.posts.dto.PostsSaveDto;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,7 @@ import java.util.stream.IntStream;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -28,15 +30,18 @@ class PostsApiControllerTest {
     private PostsRepository postsRepository;
 
     @Autowired
+    private PostsService postsService;
+
+    @Autowired
     private MockMvc mockMvc;
 
     @Autowired
     private ObjectMapper objectMapper;
 
     @Test
-    @DisplayName("Posts 생성")
+    @DisplayName("Posts 생성 성공")
     void savePosts() throws Exception {
-        PostsCreateDto postsForm = PostsCreateDto.builder()
+        PostsSaveDto postsDto = PostsSaveDto.builder()
                 .title("title -1 ")
                 .content("content")
                 .author("pej")
@@ -44,17 +49,16 @@ class PostsApiControllerTest {
 
         mockMvc.perform(post(API_V_1_POSTS)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(postsForm)))
+                .content(objectMapper.writeValueAsString(postsDto)))
                 .andExpect(status().isCreated())
-                .andDo(print())
-        ;
+                .andDo(print());
     }
 
 
     @Test
     @DisplayName("Posts 생성 Validation 오류 체크")
     void save_400() throws Exception {
-        PostsCreateDto postsForm = PostsCreateDto.builder().build();
+        PostsSaveDto postsForm = PostsSaveDto.builder().build();
         mockMvc.perform(post(API_V_1_POSTS)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(postsForm)))
@@ -64,7 +68,7 @@ class PostsApiControllerTest {
     }
 
     @Test
-    @DisplayName("전체 포스트 조회 테스트")
+    @DisplayName("전체 포스트 조회")
     void findAll() throws Exception {
         IntStream.range(0, 15).forEach(this::createPosts);
 
@@ -76,9 +80,43 @@ class PostsApiControllerTest {
         )
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("page").exists())
-        ;
+                .andExpect(jsonPath("page").exists());
     }
+
+    @Test
+    @DisplayName("포스트 단건 조회")
+    void findById() throws Exception {
+        Posts posts = createPosts(1);
+        mockMvc.perform(get("/api/v1/posts/{id}", posts.getId()))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("id").value(1));
+    }
+
+
+    @Test
+    @DisplayName("포스트 단건 조회_없는 ID 조회")
+    void findById_404() throws Exception {
+        mockMvc.perform(get("/api/v1/posts/1"))
+                .andDo(print())
+                .andExpect(status().isNotFound());
+    }
+
+
+    @Test
+    @DisplayName("포스트 수정")
+    void update() throws Exception {
+        Posts posts = createPosts(1);
+        mockMvc.perform(put(API_V_1_POSTS))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("title").value("title"))
+        ;
+
+
+    }
+
+
 
     private Posts createPosts(int index) {
         Posts posts = Posts.builder()
@@ -89,3 +127,4 @@ class PostsApiControllerTest {
         return postsRepository.save(posts);
     }
 }
+
