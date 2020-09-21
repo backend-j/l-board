@@ -44,35 +44,6 @@ class PostsApiControllerTest {
     }
 
     @Test
-    @DisplayName("Posts 생성 성공")
-    void savePosts() throws Exception {
-        PostsSaveDto postsDto = PostsSaveDto.builder()
-                .title("title -1 ")
-                .content("content")
-                .author("pej")
-                .build();
-
-        mockMvc.perform(post(API_V_1_POSTS)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(postsDto)))
-                .andExpect(status().isCreated())
-                .andDo(print());
-    }
-
-
-    @Test
-    @DisplayName("Posts 생성 Validation 오류 체크")
-    void save_400() throws Exception {
-        PostsSaveDto postsForm = PostsSaveDto.builder().build();
-        mockMvc.perform(post(API_V_1_POSTS)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(postsForm)))
-                .andDo(print())
-                .andExpect(status().isBadRequest());
-
-    }
-
-    @Test
     @DisplayName("전체 포스트 조회")
     void findAll() throws Exception {
         IntStream.range(0, 15).forEach(this::createPosts);
@@ -105,6 +76,35 @@ class PostsApiControllerTest {
         mockMvc.perform(get("/api/v1/posts/1"))
                 .andDo(print())
                 .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @DisplayName("Posts 생성 성공")
+    void savePosts() throws Exception {
+        PostsSaveDto postsDto = PostsSaveDto.builder()
+                .title("title -1 ")
+                .content("content")
+                .author("pej")
+                .build();
+
+        mockMvc.perform(post(API_V_1_POSTS)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(postsDto)))
+                .andExpect(status().isCreated())
+                .andDo(print());
+    }
+
+
+    @Test
+    @DisplayName("Posts 생성 Validation 오류 체크")
+    void save_400() throws Exception {
+        PostsSaveDto postsForm = PostsSaveDto.builder().build();
+        mockMvc.perform(post(API_V_1_POSTS)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(postsForm)))
+                .andDo(print())
+                .andExpect(status().isBadRequest());
+
     }
 
 
