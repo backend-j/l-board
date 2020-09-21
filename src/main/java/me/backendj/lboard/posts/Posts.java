@@ -1,7 +1,7 @@
 package me.backendj.lboard.posts;
 
 import lombok.*;
-import me.backendj.lboard.model.BaseEntity;
+import me.backendj.lboard.model.BaseTimeEntity;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -11,7 +11,7 @@ import javax.persistence.Id;
 @Setter(AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
-public class Posts extends BaseEntity {
+public class Posts extends BaseTimeEntity {
 
     @Id
     @GeneratedValue
