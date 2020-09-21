@@ -30,9 +30,6 @@ class PostsApiControllerTest {
     private PostsRepository postsRepository;
 
     @Autowired
-    private PostsService postsService;
-
-    @Autowired
     private MockMvc mockMvc;
 
     @Autowired
