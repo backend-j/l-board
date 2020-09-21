@@ -2,6 +2,8 @@ package me.backendj.lboard.posts;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import me.backendj.lboard.posts.dto.PostsSaveDto;
+import me.backendj.lboard.posts.dto.PostsUpdateDto;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,9 +15,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.stream.IntStream;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -37,6 +37,11 @@ class PostsApiControllerTest {
 
     @Autowired
     private ObjectMapper objectMapper;
+
+    @BeforeEach
+    void setUp() {
+        postsRepository.deleteAll();
+    }
 
     @Test
     @DisplayName("Posts 생성 성공")
@@ -90,7 +95,7 @@ class PostsApiControllerTest {
         mockMvc.perform(get("/api/v1/posts/{id}", posts.getId()))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("id").value(1));
+                .andExpect(jsonPath("id").value(posts.getId()));
     }
 
 
@@ -106,16 +111,34 @@ class PostsApiControllerTest {
     @Test
     @DisplayName("포스트 수정")
     void update() throws Exception {
+
         Posts posts = createPosts(1);
-        mockMvc.perform(put(API_V_1_POSTS))
+
+        String modifiedTitle = "수정된 title";
+        PostsUpdateDto postsDto = PostsUpdateDto.builder()
+                .title(modifiedTitle)
+                .content(posts.getContent())
+                .build();
+
+        mockMvc.perform(put(API_V_1_POSTS + "/{id}", posts.getId())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(postsDto))
+        )
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("title").value("title"))
+                .andExpect(jsonPath("title").value(modifiedTitle))
         ;
-
-
     }
 
+    @Test
+    @DisplayName("삭제 테스트")
+    void deletePosts() throws Exception {
+        Posts posts = createPosts(1);
+
+        mockMvc.perform(delete(API_V_1_POSTS + "/{id}", posts.getId()))
+                .andDo(print())
+                .andExpect(status().isNoContent());
+    }
 
 
     private Posts createPosts(int index) {

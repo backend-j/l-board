@@ -8,6 +8,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.MediaTypes;
+import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.Errors;
@@ -50,22 +51,22 @@ public class PostsApiController {
         }
         Posts post = postsService.save(saveDto);
 
-        PostsEntityModel entityModel = (PostsEntityModel) PostsEntityModel.of(post);
-        entityModel.add(linkTo(PostsApiController.class).withRel("select-posts"));
-        entityModel.add(linkTo(PostsApiController.class).slash(post.getId()).withRel("update-posts"));
-        return ResponseEntity.created(entityModel.getSelfLink(post.getId())).body(entityModel);
+        WebMvcLinkBuilder linkBuilder = linkTo(PostsApiController.class).slash(post.getId());
+        EntityModel entityModel = PostsEntityModel.of(post);
+        entityModel.add(linkBuilder.withRel("select-posts"));
+        entityModel.add(linkBuilder.withRel("update-posts"));
+        return ResponseEntity.created(linkBuilder.toUri()).body(entityModel);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity updatePost(@PathVariable Long id,
-                                                          @RequestBody @Valid PostsUpdateDto updateDto,
-                                                          Errors errors) {
+    public ResponseEntity updatePost(@PathVariable Long id, @RequestBody @Valid PostsUpdateDto updateDto,
+                                     Errors errors) {
         if (errors.hasErrors()) {
             return ResponseEntity.badRequest().build();
         }
         Posts post = postsService.update(id, updateDto);
-        PostsEntityModel entityModel = (PostsEntityModel) PostsEntityModel.of(post);
-        return ResponseEntity.ok().build();
+        EntityModel<Posts> entityModel = PostsEntityModel.of(post);
+        return ResponseEntity.ok(entityModel);
     }
 
     @DeleteMapping("/{id}")
