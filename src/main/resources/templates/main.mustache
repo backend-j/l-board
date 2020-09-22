@@ -1,0 +1,45 @@
+{{>layout/header}}
+<!-- Begin Page Content -->
+<div class="container-fluid">
+
+    <!-- Page Heading -->
+    <h1 class="h3 mb-2 text-gray-800">L-Board</h1>
+    <p class="mb-4">게시글을 확인하세요</p>
+
+    <!-- DataTales Example -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3 text-right">
+            <a href="/posts" role="button" class="btn btn-primary">글 등록</a>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                    <thead>
+                    <tr>
+                        <th>게시글번호</th>
+                        <th>제목</th>
+                        <th>작성자</th>
+                        <th>최종수정일</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {{#posts}}
+                        <tr>
+                            <td>{{id}}</td>
+                            <td><a href="/posts/{{id}}">{{title}}</a></td>
+                            <td>{{author.email}}</td>
+                            <td>{{modifiedDate}}</td>
+                        </tr>
+                    {{/posts}}
+                    </tbody>
+                </table>
+            </div>
+        </div> <!--End of cart-body -->
+    </div>
+
+</div>
+<!-- /.container-fluid -->
+</div>
+<!-- End of Main Content -->
+
+{{>layout/footer}}
