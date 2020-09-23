@@ -17,9 +17,9 @@ import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.Optional;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+
 @Slf4j
 @RequiredArgsConstructor
 @RequestMapping(value = "/api/v1/posts", produces = MediaTypes.HAL_JSON_VALUE)

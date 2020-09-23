@@ -35,6 +35,4 @@ public class PostsService {
                 .orElseThrow(() -> new PostsNotFoundException(String.format("posts ID[%s] Not found", id)));
         posts.delete();
     }
-
-
 }
