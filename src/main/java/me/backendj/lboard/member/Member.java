@@ -21,12 +21,14 @@ public class Member {
 
     private String email; //user_id
     private String password;
-    private String token;
 
     @Builder
     public Member(String email, String password, String token) {
         this.email = email;
         this.password = password;
-        this.token = token;
+    }
+
+    public boolean checkPassword(String password) {
+        return this.password.equals(password);
     }
 }
