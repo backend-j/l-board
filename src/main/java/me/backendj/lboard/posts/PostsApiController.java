@@ -1,6 +1,8 @@
 package me.backendj.lboard.posts;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import me.backendj.lboard.exception.PostsNotFoundException;
 import me.backendj.lboard.posts.dto.PostsSaveDto;
 import me.backendj.lboard.posts.dto.PostsUpdateDto;
 import org.springframework.data.domain.Page;
@@ -18,7 +20,7 @@ import javax.validation.Valid;
 import java.util.Optional;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
-
+@Slf4j
 @RequiredArgsConstructor
 @RequestMapping(value = "/api/v1/posts", produces = MediaTypes.HAL_JSON_VALUE)
 @RestController
@@ -36,11 +38,9 @@ public class PostsApiController {
 
     @GetMapping("/{id}")
     public ResponseEntity selectPost(@PathVariable("id") Long id) {
-        Optional<Posts> post = postsRepository.findById(id);
-        if (post.isEmpty()) {
-            return ResponseEntity.notFound().build();
-        }
-        EntityModel<Posts> entityModel = PostsEntityModel.of(post.get());
+        Posts post = postsRepository.findById(id)
+                .orElseThrow(() -> new PostsNotFoundException(id));
+        EntityModel<Posts> entityModel = PostsEntityModel.of(post);
         return ResponseEntity.ok(entityModel);
     }
 
@@ -49,6 +49,7 @@ public class PostsApiController {
         if (errors.hasErrors()) {
             return ResponseEntity.badRequest().build();
         }
+
         Posts post = postsService.save(saveDto);
 
         WebMvcLinkBuilder linkBuilder = linkTo(PostsApiController.class).slash(post.getId());

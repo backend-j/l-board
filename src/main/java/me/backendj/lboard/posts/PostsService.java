@@ -1,6 +1,7 @@
 package me.backendj.lboard.posts;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import me.backendj.lboard.exception.PostsNotFoundException;
 import me.backendj.lboard.posts.dto.PostsSaveDto;
 import me.backendj.lboard.posts.dto.PostsUpdateDto;
@@ -8,6 +9,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @RequiredArgsConstructor
 @Transactional
 @Service
