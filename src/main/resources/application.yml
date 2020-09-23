@@ -6,3 +6,8 @@ spring:
   jpa:
     hibernate:
       ddl-auto: create-drop
+security:
+  jwt:
+    token:
+      secret-key: pej
+      expire-length: 86400

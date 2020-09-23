@@ -17,9 +17,9 @@ var main = {
         var data = {
             title: $('#title').val(),
             author: $('#author').val(),
-            content: $('#content').val()
+            content: $('textarea#content').val()
         };
-
+        console.log(data);
         $.ajax({
             type: 'POST',
             url: '/api/v1/posts',
@@ -36,7 +36,7 @@ var main = {
     update: function () {
         var data = {
             title: $('#title').val(),
-            content: $('#content').val(),
+            content: $('textarea#content').val()
         };
 
         var id = $('#id').val();
